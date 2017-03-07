@@ -938,11 +938,8 @@ namespace Nektar
         // ........variables........ 
         int i, j;
         int       physTot = m_fields[0]->GetTotPoints();
-        /*/
-        for(i=0; i<physTot;i++)
-        {
-            m_n[i]=fields[m_nViscoElasticStressFields + m_nConvectiveFields][i];
-        }
+        //*/
+            m_n = m_fields[m_nViscoElasticStressFields+m_spacedim]->UpdatePhys();
         //*/
         Array<TwoD, Array< OneD, NekDouble> > gradv(m_spacedim,m_spacedim);
         Array<TwoD, Array< OneD, NekDouble> > gradvT(m_spacedim,m_spacedim);
@@ -979,9 +976,9 @@ namespace Nektar
         double N0, landaH;
         N0=1;
         landaH=1;
-        //1//m_muNew = Array<OneD, NekDouble> (physTot);
-        //1//m_gn = Array<OneD, NekDouble> (physTot);
-        //1//m_n = Array<OneD, NekDouble> (physTot);
+        m_muNew = Array<OneD, NekDouble> (physTot);
+        m_gn = Array<OneD, NekDouble> (physTot);
+        m_n = Array<OneD, NekDouble> (physTot);
 
         //calculate Gammadot type: 2D matrix of NekDouble-----------------------------------------------------
         for(i = 0; i < m_nConvectiveFields; ++i)
@@ -1054,13 +1051,13 @@ namespace Nektar
         //test--------------------------
 
         Vmath::Vcopy(physTot, AggRhs, 1, outarray[0], 1);
-
-        /*/calculate gn
+            cout <<"test\n";
+        //*/calculate gn
         for(i=0; i<physTot;i++)
         {
             m_gn[i] = 0.5*b[i]*(m_n[i]-1)+a[i]*N0/m_n[i];
         }
-        //calcullate mu and do something for the mu update
+        //*/calcullate mu and do something for the mu update
         for(i=0; i<physTot;i++)
         {
             m_muNew[i] = landaH*m_n[i]/(1+m_gn[i]*m_n[i]*landaH);

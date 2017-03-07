@@ -329,7 +329,7 @@ namespace Nektar
         Array<OneD, Array<OneD, NekDouble> >   fields_viscoelasticstress(m_nViscoElasticStressFields);
         //--------------------------------Me.--------------------------------------
     
-        Array<OneD, Array<OneD, NekDouble> >   fields_homogeneousbloodmodel(1);//shouldn't be m_nVi...+1 instead of 1?(askDr)
+        Array<OneD, Array<OneD, NekDouble> >   fields_homogeneousbloodmodel(1);
                 //--------------------------------Me.--------------------------------------
 
         if(m_equationType == eUnsteadyViscoElastic)
@@ -400,7 +400,6 @@ namespace Nektar
                 {
                 fields_homogeneousbloodmodel = m_integrationScheme[min(n,m_intSteps-1)]->TimeIntegrate(m_timestep, m_integrationSoln_aggregatesize, m_integrationOps_aggregatesize);
                 }
-
             //--------------------------------Me.--------------------------------------
                 
                 fields_viscoelasticstress = m_integrationScheme[min(n,m_intSteps-1)]->TimeIntegrate(m_timestep, m_integrationSoln_viscoelasticstress, m_integrationOps_viscoelasticstress);

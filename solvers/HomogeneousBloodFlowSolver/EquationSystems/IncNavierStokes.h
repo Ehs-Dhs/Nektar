@@ -210,9 +210,9 @@ namespace Nektar
             NekDouble     m_WeInf;
             NekDouble     m_etaInf;
             NekDouble     m_etaN;
-            //1//Array<OneD, NekDouble> m_muNew;
-            //1//Array<OneD, NekDouble> m_gn;
-            //1//Array<OneD, NekDouble> m_n;
+            Array<OneD, NekDouble> m_muNew;
+            Array<OneD, NekDouble> m_gn;
+            Array<OneD, NekDouble> m_n;
 
 
 
