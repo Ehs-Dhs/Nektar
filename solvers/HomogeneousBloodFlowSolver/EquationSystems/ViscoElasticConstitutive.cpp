@@ -304,7 +304,7 @@ namespace Nektar
                 Vmath::Vadd(physTot,tmp2[i][j],1,tmp3[i][j],1,wk,1);
 
 
-
+                
                 Vmath::Smul(physTot,m_ReM4,wk,1,wk,1);
                 Vmath::Vadd(physTot,wk,1,outarray[coun],1,outarray[coun],1);
 
@@ -1070,8 +1070,6 @@ namespace Nektar
         int i, j;
         int       physTot = m_fields[0]->GetTotPoints();
         //*/
-        m_n = m_fields[m_nViscoElasticStressFields+m_spacedim]->UpdatePhys();
-
         //*/
         Array<TwoD, Array< OneD, NekDouble> > gradv(m_spacedim,m_spacedim);
         Array<TwoD, Array< OneD, NekDouble> > gradvT(m_spacedim,m_spacedim);
@@ -1099,19 +1097,19 @@ namespace Nektar
         double a13, a12, a10, a23, a22, a21, a20;
         a13=1;a12=1;a10=1;a22=1;a21=1;a20=1;
         double teta, beta, etaInf, etaZero;
-        teta=1;beta=1;etaInf=1;etaZero=1;
+        teta=1;beta=7.2;etaInf=0.004;etaZero=0.14;
         Array<OneD, NekDouble> nst = Array<OneD, NekDouble> (physTot);
         Array<OneD, NekDouble> AggRhs = Array<OneD, NekDouble> (physTot);
-        double m; // maybe it's not supposed to be an integer (ask about)
-        m=0.6;
-        double N0, landaH;
-        N0=1;
-        landaH=1;
+        double m=0.6;
+        double N0, KBTk;
+        KBTk = 1; N0=1;
         m_Mup = Array<OneD, NekDouble> (physTot);
         m_landa = Array<OneD, NekDouble> (physTot);
         m_gn = Array<OneD, NekDouble> (physTot);
         m_n = Array<OneD, NekDouble> (physTot);
-               //calculate Gammadot type: 2D matrix of NekDouble-----------------------------------------------------
+        m_n = m_fields[m_nViscoElasticStressFields+m_spacedim]->UpdatePhys();
+        //cout << m_n[1] << endl;
+        //calculate Gammadot type: 2D matrix of NekDouble-----------------------------------------------------
         //*/ is these lines of code necessary? (ask about)
         for(i = 0; i < m_nConvectiveFields; ++i)
         {
@@ -1146,6 +1144,7 @@ namespace Nektar
         //
         //calculate a
         Vmath::Zero(physTot, a,1);
+        /*/
         for(i=0; i<physTot; i++)
         {
             if(gammadot[i] <= gammadotCr )
@@ -1157,32 +1156,27 @@ namespace Nektar
                 a[i] = a23*pow(gammadot[i],3)+a22*pow(gammadot[i],2)+a21*gammadot[i]+a20;
             }
         }
+        //*/
         //calculate teta
         teta = beta*etaInf/etaZero;
         //calculate nst
         //edit by pow in Vmath
         for(i=0; i<physTot;i++)
         {
-            nst[i] = etaZero/etaInf*(1+teta*pow(gammadot[i],m))/(1+beta*pow(gammadot[i],m))*(1+3/2*a[i]*N0*landaH); 
+            nst[i] = etaZero/etaInf*(1+teta*pow(gammadot[i],m))/(1+beta*pow(gammadot[i],m))*(1+3/2*a[i]*N0*m_landaH); 
         }
         //calculate b
         for(i=0; i<physTot;i++)
         {
             b[i] = a[i]*N0/nst[i]/(nst[i]-1);
         }
-        //evaluate n
+        //evaluate rhs 
         for(i=0; i<physTot;i++)
         {
-            // combine these two lines
             AggRhs[i] = 1.0/2.0*b[i]*(nst[i]-fields[0][i])*(fields[0][i]+nst[i]-1);
         }
-        //test--------------------------
-        //cout << fields[0][10] << endl;
-        //cout << AggRhs[10] << endl;
-        //test--------------------------
 
         Vmath::Vcopy(physTot, AggRhs, 1, outarray[0], 1);
-        //  cout <<"test\n";
         //*/calculate gn
         for(i=0; i<physTot;i++)
         {
@@ -1191,8 +1185,17 @@ namespace Nektar
         //*/calcullate mu and do something for the mu update
         for(i=0; i<physTot;i++)
         {
-            m_landa[i] = landaH*m_n[i]/(1+m_gn[i]*m_n[i]*landaH);
+            m_landa[i] = m_landaH*m_n[i]/(1+m_gn[i]*m_n[i]*m_landaH);
         }
+        for(i=0; i<physTot;i++)
+        {
+            m_WeNew[i] = m_UonL*m_landa[i];
+        }
+        for(i=0; i<physTot;i++)
+        {
+            m_Mup[i] = N0*KBTk*m_landa[i];
+        }
+        //cout << m_Mup[100] << "  =  " << m_landa[10] << endl;
         //*/
     }
 
@@ -1202,7 +1205,7 @@ namespace Nektar
         //*/
         Vmath::Vcopy(physTot,inarray[0],1,outarray[0],1);
         //------------------test: set n=1 for now -------------
-        Vmath::Fill(physTot, 1.0, outarray[0], 1);
+//        Vmath::Fill(physTot, 1.0, outarray[0], 1);
         //------------------test: set n=1 for now -------------
     }
     //-----------------------------------------------------Me.--------------------------------------------------
@@ -1307,8 +1310,6 @@ namespace Nektar
         {
             if((m_fields[0]->GetBndConditions()[n])->GetBoundaryConditionType() == SpatialDomains::eNeumann)
             {
-
-
                 // loop over elements along boundary
                 for(el = 0; el < m_fields[0]->GetBndCondExpansions()[n]->GetExpSize(); ++el,cnt++)
                 {

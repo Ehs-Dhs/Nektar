@@ -236,16 +236,6 @@ namespace Nektar
         // m_ReM4=(1-m_Rmu)/m_Rmu;
         // m_Rep=1.0/m_Re; // coeficient of \grad p
 
-        //case #5
-
-        // m_ReC = 1.0 ;
-        // m_ReM1 = 1.0 ;
-        // m_ReM2 = etaS/m_Re ;
-        // m_ReM3 = 1.0/m_Re ;
-        // m_ReM4 = Weissenberg;
-        // m_Rep = 1.0/m_Re; // coeficient of \grad p
-
-
 
         if (m_equationType == eUnsteadyNavierStokes || m_equationType == eSteadyNavierStokes || m_equationType == eUnsteadyViscoElastic)
         {
@@ -334,6 +324,8 @@ namespace Nektar
         Vmath::Fill(phystot, m_We, m_WeNew, 1);
         cout << "here is my value: " << m_WeNew[10] <<endl;
         cout << "here is my value: " << m_We <<endl;
+        m_landaH = 0.145;
+        m_UonL = m_We/m_landaH;
         //--------------------------------Me.--------------------------------------
 
         if(m_equationType == eUnsteadyViscoElastic)

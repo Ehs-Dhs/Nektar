@@ -210,6 +210,8 @@ namespace Nektar
             NekDouble     m_WeInf;
             NekDouble     m_etaInf;
             NekDouble     m_etaN;
+            NekDouble     m_landaH;
+            NekDouble     m_UonL;
             Array<OneD, NekDouble> m_Mup;
             Array<OneD, NekDouble> m_landa;
             Array<OneD, NekDouble> m_WeNew; // change this parameter name in future
