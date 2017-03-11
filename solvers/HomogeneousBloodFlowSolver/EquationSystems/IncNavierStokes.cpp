@@ -330,10 +330,10 @@ namespace Nektar
         //--------------------------------Me.--------------------------------------
     
         Array<OneD, Array<OneD, NekDouble> >   fields_homogeneousbloodmodel(1);
-        cout  << "111\n";
-       //cout << "here is my value: " << m_WeNew[10] <<endl;
-        //cout << "here is my value: " << m_We <<endl;
-        cout  << "222\n";
+        m_WeNew = Array<OneD, NekDouble> (phystot);
+        Vmath::Fill(phystot, m_We, m_WeNew, 1);
+        cout << "here is my value: " << m_WeNew[10] <<endl;
+        cout << "here is my value: " << m_We <<endl;
         //--------------------------------Me.--------------------------------------
 
         if(m_equationType == eUnsteadyViscoElastic)
@@ -1345,3 +1345,4 @@ namespace Nektar
     }
 
 } //end of namespace
+//vim:foldmethod=marker:foldlevel=0

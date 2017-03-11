@@ -74,9 +74,6 @@ namespace Nektar
 
             ASSERTL0(i !=eViscoElasticTreatmentTypeSize ,"VISCOELASTICTREATMENT not found in SOLVERINFO section");
             //----------------------------------------------Me.------------------------------------------------
-            switch(m_viscoelasticType)
-            {
-                case eHomogeneousBloodModel:
 
                     m_integrationOps_aggregatesize.DefineOdeRhs(&ViscoElasticConstitutive::EvaluateAggregateSize_FullExpTreatment_RHS, this);
 
@@ -87,35 +84,9 @@ namespace Nektar
 
                     m_integrationOps_viscoelasticstress.DefineImplicitSolve(&ViscoElasticConstitutive::EvaluateViscoElasticStress_OldroydB_FullExpTreatment, this);
 
-
-                    break;
                     //----------------------------------------------Me.------------------------------------------------
-                case eOldroydB:
-
-                    switch( m_viscoelastictreatmentType)
-                    {
-                        case eFullExplicit:
-
-                            m_integrationOps_viscoelasticstress.DefineOdeRhs(&ViscoElasticConstitutive::EvaluateViscoElasticStress_OldroydB_FullExpTreatment_RHS, this);
-
-                            m_integrationOps_viscoelasticstress.DefineImplicitSolve(&ViscoElasticConstitutive::EvaluateViscoElasticStress_OldroydB_FullExpTreatment, this);
-
-                            break;
-
-                        case eImplicitExplicit:
-
-                            m_integrationOps_viscoelasticstress.DefineOdeRhs(&ViscoElasticConstitutive::EvaluateViscoElasticStress_OldroydB_ImpExpTreatment_ExplicitPart, this);
-
-                            m_integrationOps_viscoelasticstress.DefineImplicitSolve(&ViscoElasticConstitutive::EvaluateViscoElasticStress_OldroydB_ImpExpTreatment_Implicitpart, this);
-
-                            break;
-                    }
-
-                    break;
-            }
+                
         }
-
-
     }//End of function void ViscoElasticConstitutive::v_InitObject()
 
     ViscoElasticConstitutive::~ViscoElasticConstitutive(void)
@@ -125,13 +96,24 @@ namespace Nektar
     void ViscoElasticConstitutive::EvaluateViscoElasticStress_OldroydB_FullExpTreatment(const Array<OneD, const Array<OneD, NekDouble> > &inarray, Array<OneD, Array<OneD, NekDouble> > &outarray, const NekDouble time, const NekDouble aii_Dt)
     {
         //       NekDouble lambda=1.0+aii_Dt*m_ReC/m_We;
-        NekDouble lambda=aii_Dt*m_ReC/m_We+1;
         int       physTot = m_fields[0]->GetTotPoints();
+        //NekDouble lambda=aii_Dt*m_ReC/m_We+1;
+        //-------------me-----
+        Array<OneD, NekDouble> lambda(physTot);
+        for(int i=0; i<physTot;i++)
+        {
+            lambda[i]=aii_Dt*m_ReC/m_WeNew[i]+1;
+        }
+        //-------------me-----
         for(int j = 0; j < m_nViscoElasticStressFields; ++j)
-
         {
             Vmath::Vcopy(physTot,inarray[j],1,outarray[j],1);
-            Vmath::Smul(physTot,1/lambda,outarray[j],1,outarray[j],1);
+           //Vmath::Smul(physTot,1/lambda,outarray[j],1,outarray[j],1);
+            for(int i=0; i<physTot;i++)
+            {
+                outarray[j][i]=outarray[j][i]/lambda[i];
+            }
+  
         }
     }
 
@@ -941,10 +923,8 @@ namespace Nektar
         //*/
         m_n = m_fields[m_nViscoElasticStressFields+m_spacedim]->UpdatePhys();
 
-        cout << "start of agg2*2.\n";
         //*/
         Array<TwoD, Array< OneD, NekDouble> > gradv(m_spacedim,m_spacedim);
-        cout << "start of agg2*2.\n";
         Array<TwoD, Array< OneD, NekDouble> > gradvT(m_spacedim,m_spacedim);
         Array<TwoD, Array< OneD, NekDouble> > Gammadot(m_spacedim,m_spacedim);
         Array<OneD, NekDouble> gammadot = Array<OneD, NekDouble> (physTot);
@@ -981,11 +961,8 @@ namespace Nektar
         m_Mup = Array<OneD, NekDouble> (physTot);
         m_landa = Array<OneD, NekDouble> (physTot);
         m_gn = Array<OneD, NekDouble> (physTot);
-        m_WeNew = Array<OneD, NekDouble> (physTot);
         m_n = Array<OneD, NekDouble> (physTot);
-       Vmath::Fill(physTot, m_We, m_WeNew, 1);
-
-        //calculate Gammadot type: 2D matrix of NekDouble-----------------------------------------------------
+               //calculate Gammadot type: 2D matrix of NekDouble-----------------------------------------------------
         //*/ is these lines of code necessary? (ask about)
         for(i = 0; i < m_nConvectiveFields; ++i)
         {
@@ -1078,17 +1055,9 @@ namespace Nektar
         //------------------test: set n=1 for now -------------
         Vmath::Fill(physTot, 1.0, outarray[0], 1);
         //------------------test: set n=1 for now -------------
-        //cout << inarray[0][10] << endl;
-        //cout << outarray[0][10] << endl;
-        //*/
-        //printf("function2\n");
-        //        exit(-1);
     }
     //-----------------------------------------------------Me.--------------------------------------------------
-
-    // =====================================Weak formulation==================================================
-    // deleted from here
-
+    // Weak formulation deleted from here
 
     void  ViscoElasticConstitutive::AddStressTimesNormalToVelocityNeumannBC(const Array<OneD, const Array<OneD, NekDouble> > &stressin, Array<OneD, Array<OneD, NekDouble> > &Weakoutarray)
     {
