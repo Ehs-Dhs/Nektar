@@ -939,14 +939,16 @@ namespace Nektar
         int i, j;
         int       physTot = m_fields[0]->GetTotPoints();
         //*/
-            m_n = m_fields[m_nViscoElasticStressFields+m_spacedim]->UpdatePhys();
+        m_n = m_fields[m_nViscoElasticStressFields+m_spacedim]->UpdatePhys();
+
+        cout << "start of agg2*2.\n";
         //*/
         Array<TwoD, Array< OneD, NekDouble> > gradv(m_spacedim,m_spacedim);
+        cout << "start of agg2*2.\n";
         Array<TwoD, Array< OneD, NekDouble> > gradvT(m_spacedim,m_spacedim);
         Array<TwoD, Array< OneD, NekDouble> > Gammadot(m_spacedim,m_spacedim);
         Array<OneD, NekDouble> gammadot = Array<OneD, NekDouble> (physTot);
         Array<OneD, Array<OneD, NekDouble> >   fields_velocity(m_nConvectiveFields);
-
         for(i = 0; i < m_nConvectiveFields; ++i)
         {
             fields_velocity[i]  = m_fields[i]->GetPhys();
@@ -976,11 +978,15 @@ namespace Nektar
         double N0, landaH;
         N0=1;
         landaH=1;
-        m_muNew = Array<OneD, NekDouble> (physTot);
+        m_Mup = Array<OneD, NekDouble> (physTot);
+        m_landa = Array<OneD, NekDouble> (physTot);
         m_gn = Array<OneD, NekDouble> (physTot);
+        m_WeNew = Array<OneD, NekDouble> (physTot);
         m_n = Array<OneD, NekDouble> (physTot);
+       Vmath::Fill(physTot, m_We, m_WeNew, 1);
 
         //calculate Gammadot type: 2D matrix of NekDouble-----------------------------------------------------
+        //*/ is these lines of code necessary? (ask about)
         for(i = 0; i < m_nConvectiveFields; ++i)
         {
             for(j = 0; j < m_nConvectiveFields; ++j)
@@ -1014,7 +1020,6 @@ namespace Nektar
         //
         //calculate a
         Vmath::Zero(physTot, a,1);
-
         for(i=0; i<physTot; i++)
         {
             if(gammadot[i] <= gammadotCr )
@@ -1051,7 +1056,7 @@ namespace Nektar
         //test--------------------------
 
         Vmath::Vcopy(physTot, AggRhs, 1, outarray[0], 1);
-            cout <<"test\n";
+        //  cout <<"test\n";
         //*/calculate gn
         for(i=0; i<physTot;i++)
         {
@@ -1060,7 +1065,7 @@ namespace Nektar
         //*/calcullate mu and do something for the mu update
         for(i=0; i<physTot;i++)
         {
-            m_muNew[i] = landaH*m_n[i]/(1+m_gn[i]*m_n[i]*landaH);
+            m_landa[i] = landaH*m_n[i]/(1+m_gn[i]*m_n[i]*landaH);
         }
         //*/
     }

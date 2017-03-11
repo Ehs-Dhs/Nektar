@@ -330,7 +330,11 @@ namespace Nektar
         //--------------------------------Me.--------------------------------------
     
         Array<OneD, Array<OneD, NekDouble> >   fields_homogeneousbloodmodel(1);
-                //--------------------------------Me.--------------------------------------
+        cout  << "111\n";
+       //cout << "here is my value: " << m_WeNew[10] <<endl;
+        //cout << "here is my value: " << m_We <<endl;
+        cout  << "222\n";
+        //--------------------------------Me.--------------------------------------
 
         if(m_equationType == eUnsteadyViscoElastic)
         {

@@ -200,7 +200,7 @@ namespace Nektar
             NekDouble     m_L;        // length scale
             NekDouble     m_Ro;       //density 
             NekDouble     m_Mus;
-            NekDouble     m_Mup;
+            //NekDouble     m_Mup;
             NekDouble     m_ReM1;
             NekDouble     m_ReM2;
             NekDouble     m_ReM3;
@@ -210,7 +210,9 @@ namespace Nektar
             NekDouble     m_WeInf;
             NekDouble     m_etaInf;
             NekDouble     m_etaN;
-            Array<OneD, NekDouble> m_muNew;
+            Array<OneD, NekDouble> m_Mup;
+            Array<OneD, NekDouble> m_landa;
+            Array<OneD, NekDouble> m_WeNew; // change this parameter name in future
             Array<OneD, NekDouble> m_gn;
             Array<OneD, NekDouble> m_n;
 
