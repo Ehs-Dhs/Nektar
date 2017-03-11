@@ -157,8 +157,12 @@ namespace Nektar
                 m_fields[i]->PhysDeriv(MultiRegions::DirCartesianMap[i],fields[j], wk);
                 Vmath::Vvtvp(physTot,wk,1,fields_velocity[i],1,tmp,1,tmp,1);
             }
-
-            Vmath::Smul(physTot,-m_We,tmp,1,outarray[j],1);
+            Vmath::Vcopy(physTot,tmp,1,outarray[j],1);
+//            Vmath::Smul(physTot,-m_We,tmp,1,outarray[j],1);
+            for(int i=0; i<physTot;i++)
+            {
+                outarray[j][i]=outarray[j][i]*m_WeNew[i];
+            }
         }
 
 
@@ -220,8 +224,12 @@ namespace Nektar
 
                 }
 
+                for(int i2=0; i2<physTot;i2++)
+                {
+                    wk[i2]=wk[i2]*m_WeNew[i2];
+                }
 
-                Vmath::Smul(physTot,m_We,wk,1,wk,1);
+                //Vmath::Smul(physTot,m_We,wk,1,wk,1);
 
                 Vmath::Vadd(physTot,wk,1,outarray[coun],1,outarray[coun],1);
             }
@@ -265,9 +273,12 @@ namespace Nektar
 
                 }
 
+                for(int i2=0; i2<physTot;i2++)
+                {
+                    wk[i2]=wk[i2]*m_WeNew[i2];
+                }
 
-                Vmath::Smul(physTot,m_We,wk,1,wk,1);
-
+//                Vmath::Smul(physTot,m_We,wk,1,wk,1);
 
                 Vmath::Vadd(physTot,wk,1,outarray[coun],1,outarray[coun],1);
 
@@ -296,8 +307,13 @@ namespace Nektar
 
                 Vmath::Smul(physTot,m_ReM4,wk,1,wk,1);
                 Vmath::Vadd(physTot,wk,1,outarray[coun],1,outarray[coun],1);
-                Vmath::Smul(physTot,m_ReC/m_We,outarray[coun],1,outarray[coun],1);
 
+                for(int i2=0; i2<physTot;i2++)
+                {
+                     outarray[coun][i2]=outarray[coun][i2]*m_ReC/m_WeNew[i2];
+                }
+
+               // Vmath::Smul(physTot,m_ReC/m_We,outarray[coun],1,outarray[coun],1);
 
             }
 
@@ -609,27 +625,48 @@ namespace Nektar
 
         if (m_spacedim == 2){ //2D
             //m_0,0
-            Vmath::Fill(physTot,aii_Dt+m_We/m_ReC,tmp[0][0],1);
-            Vmath::Svtvp(physTot,-2*m_We*aii_Dt, gradv[0][0],1,tmp[0][0],1,tmp[0][0],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[0][0][i2]=aii_Dt+m_WeNew[i2]/m_ReC;
+            }
+            //Vmath::Fill(physTot,aii_Dt+m_We/m_ReC,tmp[0][0],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[0][0][i2]=-2*m_WeNew[i2]*aii_Dt*gradv[0][0][i2]+tmp[0][0][i2];
+            }
+            //Vmath::Svtvp(physTot,-2*m_We*aii_Dt, gradv[0][0],1,tmp[0][0],1,tmp[0][0],1);
 
 
 
             //m_0,1
             Vmath::Zero(physTot,tmp[0][1],1);
-            Vmath::Svtvp(physTot,-2*m_We*aii_Dt, gradv[0][1],1,tmp[0][1],1,tmp[0][1],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[0][1][i2]=-2*m_WeNew[i2]*aii_Dt*gradv[0][1][i2]+tmp[0][1][i2];
+            }
+            //Vmath::Svtvp(physTot,-2*m_We*aii_Dt, gradv[0][1],1,tmp[0][1],1,tmp[0][1],1);
 
             //m_0,2
             Vmath::Zero(physTot,tmp[0][2],1);
 
             //m_1,0
             Vmath::Zero(physTot,tmp[1][0],1);
-            Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[1][0],1,tmp[1][0],1,tmp[1][0],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[1][0][i2]=-1*m_WeNew[i2]*aii_Dt*gradv[1][0][i2]+tmp[1][0][i2];
+            }
+            //Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[1][0],1,tmp[1][0],1,tmp[1][0],1);
 
             //m_1,1
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[1][1][i2]=-1*m_WeNew[i2]*aii_Dt*gradv[0][0][i2]-m_WeNew[i2]*aii_Dt*gradv[1][1][i2]+aii_Dt+m_WeNew[i2]/m_ReC;
+            }
+/*/
             Vmath::Fill(physTot,aii_Dt+m_We/m_ReC,tmp[1][1],1);
             Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[0][0],1,tmp[1][1],1,tmp[1][1],1);
             Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[1][1],1,tmp[1][1],1,tmp[1][1],1);
-
+//*/
 
             //m_1,2
             Vmath::Zero(physTot,tmp[1][2],1);
