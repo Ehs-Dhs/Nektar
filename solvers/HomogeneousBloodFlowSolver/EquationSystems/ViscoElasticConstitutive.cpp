@@ -639,22 +639,22 @@ namespace Nektar
 
 
             //m_0,1
-            Vmath::Zero(physTot,tmp[0][1],1);
             for(int i2=0; i2<physTot;i2++)
             {
-                 tmp[0][1][i2]=-2*m_WeNew[i2]*aii_Dt*gradv[0][1][i2]+tmp[0][1][i2];
+                 tmp[0][1][i2]=-2*m_WeNew[i2]*aii_Dt*gradv[0][1][i2];
             }
+            //Vmath::Zero(physTot,tmp[0][1],1);
             //Vmath::Svtvp(physTot,-2*m_We*aii_Dt, gradv[0][1],1,tmp[0][1],1,tmp[0][1],1);
 
             //m_0,2
             Vmath::Zero(physTot,tmp[0][2],1);
 
             //m_1,0
-            Vmath::Zero(physTot,tmp[1][0],1);
             for(int i2=0; i2<physTot;i2++)
             {
-                 tmp[1][0][i2]=-1*m_WeNew[i2]*aii_Dt*gradv[1][0][i2]+tmp[1][0][i2];
+                 tmp[1][0][i2]=-1*m_WeNew[i2]*aii_Dt*gradv[1][0][i2];
             }
+            //Vmath::Zero(physTot,tmp[1][0],1);
             //Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[1][0],1,tmp[1][0],1,tmp[1][0],1);
 
             //m_1,1
@@ -669,20 +669,32 @@ namespace Nektar
 //*/
 
             //m_1,2
-            Vmath::Zero(physTot,tmp[1][2],1);
-            Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[0][1],1,tmp[1][2],1,tmp[1][2],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[1][2][i2]=-1*m_WeNew[i2]*aii_Dt*gradv[0][1][i2];
+            }
+            //Vmath::Zero(physTot,tmp[1][2],1);
+            //Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[0][1],1,tmp[1][2],1,tmp[1][2],1);
 
             //m_2,0
             Vmath::Zero(physTot,tmp[2][0],1);
 
             //m_2,1
-            Vmath::Zero(physTot,tmp[2][1],1);
-            Vmath::Svtvp(physTot,-2*m_We*aii_Dt, gradv[1][0],1,tmp[2][1],1,tmp[2][1],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[2][1][i2]=-2*m_WeNew[i2]*aii_Dt*gradv[1][0][i2];
+            }
+            //Vmath::Zero(physTot,tmp[2][1],1);
+            //Vmath::Svtvp(physTot,-2*m_We*aii_Dt, gradv[1][0],1,tmp[2][1],1,tmp[2][1],1);
 
             //m_2,2
-            Vmath::Fill(physTot,aii_Dt+m_We/m_ReC,tmp[2][2],1);
-            Vmath::Svtvp(physTot,-2.0*m_We*aii_Dt, gradv[1][1],1,tmp[2][2],1,tmp[2][2],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[2][2][i2]=aii_Dt+m_WeNew[i2]/m_ReC-2.0*m_WeNew[i2]*aii_Dt*gradv[1][1][i2];
+            }
 
+            //Vmath::Fill(physTot,aii_Dt+m_We/m_ReC,tmp[2][2],1);
+            //Vmath::Svtvp(physTot,-2.0*m_We*aii_Dt, gradv[1][1],1,tmp[2][2],1,tmp[2][2],1);
 
         }
 
@@ -690,16 +702,28 @@ namespace Nektar
 
 
             // m_0,0
-            Vmath::Fill(physTot,aii_Dt+m_We/m_ReC,tmp[0][0],1);
-            Vmath::Svtvp(physTot,-2*m_We*aii_Dt, gradv[0][0],1,tmp[0][0],1,tmp[0][0],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[0][0][i2]=aii_Dt+m_WeNew[i2]/m_ReC-2.0*m_WeNew[i2]*aii_Dt*gradv[0][0][i2];
+            }
+            //Vmath::Fill(physTot,aii_Dt+m_We/m_ReC,tmp[0][0],1);
+            //Vmath::Svtvp(physTot,-2*m_We*aii_Dt, gradv[0][0],1,tmp[0][0],1,tmp[0][0],1);
 
             // m_0,1
-            Vmath::Zero(physTot,tmp[0][1],1);
-            Vmath::Svtvp(physTot,-2*m_We*aii_Dt, gradv[0][1],1,tmp[0][1],1,tmp[0][1],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[0][1][i2]=-2.0*m_WeNew[i2]*aii_Dt*gradv[0][1][i2];
+            }
+            //Vmath::Zero(physTot,tmp[0][1],1);
+            //Vmath::Svtvp(physTot,-2*m_We*aii_Dt, gradv[0][1],1,tmp[0][1],1,tmp[0][1],1);
 
             // m_0,2
-            Vmath::Zero(physTot,tmp[0][2],1);
-            Vmath::Svtvp(physTot,-2*m_We*aii_Dt, gradv[0][2],1,tmp[0][2],1,tmp[0][2],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[0][2][i2]=-2.0*m_WeNew[i2]*aii_Dt*gradv[0][2][i2];
+            }
+            //Vmath::Zero(physTot,tmp[0][2],1);
+            //Vmath::Svtvp(physTot,-2*m_We*aii_Dt, gradv[0][2],1,tmp[0][2],1,tmp[0][2],1);
 
             // m_0,3
             Vmath::Zero(physTot,tmp[0][3],1);
@@ -711,73 +735,125 @@ namespace Nektar
             Vmath::Zero(physTot,tmp[0][5],1);
 
             // m_1,0
-            Vmath::Zero(physTot,tmp[1][0],1);
-            Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[1][0],1,tmp[1][0],1,tmp[1][0],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[1][0][i2]=-1.0*m_WeNew[i2]*aii_Dt*gradv[1][0][i2];
+            }
+            //Vmath::Zero(physTot,tmp[1][0],1);
+            //Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[1][0],1,tmp[1][0],1,tmp[1][0],1);
 
             //m_1,1
-            Vmath::Fill(physTot,aii_Dt+m_We/m_ReC,tmp[1][1],1);
-            Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[0][0],1,tmp[1][1],1,tmp[1][1],1);
-            Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[1][1],1,tmp[1][1],1,tmp[1][1],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[1][1][i2]=-1.0*m_WeNew[i2]*aii_Dt*gradv[0][0][i2]-m_WeNew[i2]*aii_Dt*gradv[1][1][i2]+aii_Dt+m_WeNew[i2]/m_ReC;
+            }
+            //Vmath::Fill(physTot,aii_Dt+m_We/m_ReC,tmp[1][1],1);
+            //Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[0][0],1,tmp[1][1],1,tmp[1][1],1);
+            //Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[1][1],1,tmp[1][1],1,tmp[1][1],1);
 
             // m_1,2
-            Vmath::Zero(physTot,tmp[1][2],1);
-            Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[1][2],1,tmp[1][2],1,tmp[1][2],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[1][2][i2]=-1.0*m_WeNew[i2]*aii_Dt*gradv[1][2][i2];
+            }
+            //Vmath::Zero(physTot,tmp[1][2],1);
+            //Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[1][2],1,tmp[1][2],1,tmp[1][2],1);
 
             // m_1,3
-            Vmath::Zero(physTot,tmp[1][3],1);
-            Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[0][1],1,tmp[1][3],1,tmp[1][3],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[1][3][i2]=-1.0*m_WeNew[i2]*aii_Dt*gradv[0][1][i2];
+            }
+            //Vmath::Zero(physTot,tmp[1][3],1);
+            //Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[0][1],1,tmp[1][3],1,tmp[1][3],1);
 
             // m_1,4
-            Vmath::Zero(physTot,tmp[1][4],1);
-            Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[0][2],1,tmp[1][4],1,tmp[1][4],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[1][4][i2]=-1.0*m_WeNew[i2]*aii_Dt*gradv[0][2][i2];
+            }
+            //Vmath::Zero(physTot,tmp[1][4],1);
+            //Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[0][2],1,tmp[1][4],1,tmp[1][4],1);
 
             // m_1,5
             Vmath::Zero(physTot,tmp[1][5],1);
 
             // m_2,0
-            Vmath::Zero(physTot,tmp[2][0],1);
-            Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[2][0],1,tmp[2][0],1,tmp[2][0],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[2][0][i2]=-1.0*m_WeNew[i2]*aii_Dt*gradv[2][0][i2];
+            }
+            //Vmath::Zero(physTot,tmp[2][0],1);
+            //Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[2][0],1,tmp[2][0],1,tmp[2][0],1);
 
 
             // m_2,1
-            Vmath::Zero(physTot,tmp[2][1],1);
-            Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[2][1],1,tmp[2][1],1,tmp[2][1],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[2][1][i2]=-1.0*m_WeNew[i2]*aii_Dt*gradv[2][1][i2];
+            }
+            //Vmath::Zero(physTot,tmp[2][1],1);
+            //Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[2][1],1,tmp[2][1],1,tmp[2][1],1);
 
             //m_2,2
-            Vmath::Fill(physTot,aii_Dt+m_We/m_ReC,tmp[2][2],1);
-            Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[0][0],1,tmp[2][2],1,tmp[2][2],1);
-            Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[2][2],1,tmp[2][2],1,tmp[2][2],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[2][2][i2]=-1.0*m_WeNew[i2]*aii_Dt*gradv[0][0][i2]-m_WeNew[i2]*aii_Dt*gradv[2][2][i2]+aii_Dt+m_WeNew[i2]/m_ReC;
+            }
+            //Vmath::Fill(physTot,aii_Dt+m_We/m_ReC,tmp[2][2],1);
+            //Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[0][0],1,tmp[2][2],1,tmp[2][2],1);
+            //Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[2][2],1,tmp[2][2],1,tmp[2][2],1);
 
             // m_2,3
             Vmath::Zero(physTot,tmp[2][3],1);
 
             // m_2,4
-            Vmath::Zero(physTot,tmp[2][4],1);
-            Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[0][1],1,tmp[2][4],1,tmp[2][4],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[2][4][i2]=-1.0*m_WeNew[i2]*aii_Dt*gradv[0][1][i2];
+            }
+            //Vmath::Zero(physTot,tmp[2][4],1);
+            //Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[0][1],1,tmp[2][4],1,tmp[2][4],1);
 
             // m_2,5
-            Vmath::Zero(physTot,tmp[2][5],1);
-            Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[0][2],1,tmp[2][5],1,tmp[2][5],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[2][5][i2]=-1.0*m_WeNew[i2]*aii_Dt*gradv[0][2][i2];
+            }
+            //Vmath::Zero(physTot,tmp[2][5],1);
+            //Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[0][2],1,tmp[2][5],1,tmp[2][5],1);
 
             // m_3,0
             Vmath::Zero(physTot,tmp[3][0],1);
 
             //m_3,1
-            Vmath::Zero(physTot,tmp[3][1],1);
-            Vmath::Svtvp(physTot,-2*m_We*aii_Dt, gradv[1][0],1,tmp[3][1],1,tmp[3][1],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[3][1][i2]=-2.0*m_WeNew[i2]*aii_Dt*gradv[1][0][i2];
+            }
+            //Vmath::Zero(physTot,tmp[3][1],1);
+            //Vmath::Svtvp(physTot,-2*m_We*aii_Dt, gradv[1][0],1,tmp[3][1],1,tmp[3][1],1);
 
             // m_3,2
             Vmath::Zero(physTot,tmp[3][2],1);
 
 
             //m_3,3
-            Vmath::Fill(physTot,aii_Dt+m_We/m_ReC,tmp[3][3],1);
-            Vmath::Svtvp(physTot,-2*m_We*aii_Dt, gradv[1][1],1,tmp[3][3],1,tmp[3][3],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[3][3][i2]=-2.0*m_WeNew[i2]*aii_Dt*gradv[1][1][i2];
+            }
+            //Vmath::Fill(physTot,aii_Dt+m_We/m_ReC,tmp[3][3],1);
+            //Vmath::Svtvp(physTot,-2*m_We*aii_Dt, gradv[1][1],1,tmp[3][3],1,tmp[3][3],1);
 
 
             //m_3,4
-            Vmath::Zero(physTot,tmp[3][4],1);
-            Vmath::Svtvp(physTot,-2*m_We*aii_Dt, gradv[1][2],1,tmp[3][4],1,tmp[3][4],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[3][4][i2]=-2.0*m_WeNew[i2]*aii_Dt*gradv[1][2][i2];
+            }
+            //Vmath::Zero(physTot,tmp[3][4],1);
+            //Vmath::Svtvp(physTot,-2*m_We*aii_Dt, gradv[1][2],1,tmp[3][4],1,tmp[3][4],1);
 
             // m_3,5
             Vmath::Zero(physTot,tmp[3][5],1);
@@ -786,25 +862,45 @@ namespace Nektar
             Vmath::Zero(physTot,tmp[4][0],1);
 
             //m_4,1
-            Vmath::Zero(physTot,tmp[4][1],1);
-            Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[2][0],1,tmp[4][1],1,tmp[4][1],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[4][1][i2]=-1.0*m_WeNew[i2]*aii_Dt*gradv[2][0][i2];
+            }
+            //Vmath::Zero(physTot,tmp[4][1],1);
+            //Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[2][0],1,tmp[4][1],1,tmp[4][1],1);
 
             //m_4,2
-            Vmath::Zero(physTot,tmp[4][2],1);
-            Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[1][0],1,tmp[4][2],1,tmp[4][2],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[4][2][i2]=-1.0*m_WeNew[i2]*aii_Dt*gradv[1][0][i2];
+            }
+            //Vmath::Zero(physTot,tmp[4][2],1);
+            //Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[1][0],1,tmp[4][2],1,tmp[4][2],1);
 
             //m_4,3
-            Vmath::Zero(physTot,tmp[4][3],1);
-            Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[2][1],1,tmp[4][3],1,tmp[4][3],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[4][3][i2]=-1.0*m_WeNew[i2]*aii_Dt*gradv[2][1][i2];
+            }
+            //Vmath::Zero(physTot,tmp[4][3],1);
+            //Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[2][1],1,tmp[4][3],1,tmp[4][3],1);
 
             //m_4,4
-            Vmath::Fill(physTot,aii_Dt+m_We/m_ReC,tmp[4][4],1);
-            Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[1][1],1,tmp[4][4],1,tmp[4][4],1);
-            Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[2][2],1,tmp[4][4],1,tmp[4][4],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[4][4][i2]=-1.0*m_WeNew[i2]*aii_Dt*gradv[1][1][i2]-m_WeNew[i2]*aii_Dt*gradv[2][2][i2]+aii_Dt+m_WeNew[i2]/m_ReC;
+            }
+            //Vmath::Fill(physTot,aii_Dt+m_We/m_ReC,tmp[4][4],1);
+            //Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[1][1],1,tmp[4][4],1,tmp[4][4],1);
+            //Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[2][2],1,tmp[4][4],1,tmp[4][4],1);
 
             //m_4,5
-            Vmath::Zero(physTot,tmp[4][5],1);
-            Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[1][2],1,tmp[4][5],1,tmp[4][5],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[4][5][i2]=-1.0*m_WeNew[i2]*aii_Dt*gradv[1][2][i2];
+            }
+            //Vmath::Zero(physTot,tmp[4][5],1);
+            //Vmath::Svtvp(physTot,-m_We*aii_Dt, gradv[1][2],1,tmp[4][5],1,tmp[4][5],1);
 
             // m_5,0
             Vmath::Zero(physTot,tmp[5][0],1);
@@ -813,19 +909,31 @@ namespace Nektar
             Vmath::Zero(physTot,tmp[5][1],1);
 
             //m_5,2
-            Vmath::Zero(physTot,tmp[5][2],1);
-            Vmath::Svtvp(physTot,-2*m_We*aii_Dt, gradv[2][0],1,tmp[5][2],1,tmp[5][2],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[5][2][i2]=-2.0*m_WeNew[i2]*aii_Dt*gradv[2][0][i2];
+            }
+            //Vmath::Zero(physTot,tmp[5][2],1);
+            //Vmath::Svtvp(physTot,-2*m_We*aii_Dt, gradv[2][0],1,tmp[5][2],1,tmp[5][2],1);
 
             // m_5,3
             Vmath::Zero(physTot,tmp[5][3],1);
 
             //m_5,4
-            Vmath::Zero(physTot,tmp[5][4],1);
-            Vmath::Svtvp(physTot,-2*m_We*aii_Dt, gradv[2][1],1,tmp[5][4],1,tmp[5][4],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[5][4][i2]=-2.0*m_WeNew[i2]*aii_Dt*gradv[2][1][i2];
+            }
+            //Vmath::Zero(physTot,tmp[5][4],1);
+            //Vmath::Svtvp(physTot,-2*m_We*aii_Dt, gradv[2][1],1,tmp[5][4],1,tmp[5][4],1);
 
             //m_5,5
-            Vmath::Fill(physTot,aii_Dt+m_We/m_ReC,tmp[5][5],1);
-            Vmath::Svtvp(physTot,-2*m_We*aii_Dt, gradv[2][2],1,tmp[5][5],1,tmp[5][5],1);
+            for(int i2=0; i2<physTot;i2++)
+            {
+                 tmp[2][4][i2]=-2.0*m_WeNew[i2]*aii_Dt*gradv[2][2][i2]+aii_Dt+m_WeNew[i2]/m_ReC;
+            }
+            //Vmath::Fill(physTot,aii_Dt+m_We/m_ReC,tmp[5][5],1);
+            //Vmath::Svtvp(physTot,-2*m_We*aii_Dt, gradv[2][2],1,tmp[5][5],1,tmp[5][5],1);
 
 
 
@@ -873,7 +981,11 @@ namespace Nektar
             for(j =i; j < m_nConvectiveFields; ++j)
             {
                 coun=coun+1;
-                Vmath::Svtvp(physTot,m_We/m_ReC, inarray[coun],1,rhs[coun],1,rhs[coun],1);
+                for(int i2=0; i2<physTot;i2++)
+                {
+                     rhs[coun][i2]=rhs[coun][i2]+m_WeNew[i2]/m_ReC*inarray[coun][i2];
+                }
+                //Vmath::Svtvp(physTot,m_We/m_ReC, inarray[coun],1,rhs[coun],1,rhs[coun],1);
             }
         }
 
